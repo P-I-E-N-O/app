@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.6
   provider: ^6.1.2
   lottie: ^3.1.2
+  liquid_progress_indicator_v2: ^0.5.0
+  syncfusion_flutter_charts: ^26.1.38 
 
 dev_dependencies:
   flutter_test:

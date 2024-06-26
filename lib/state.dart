@@ -4,11 +4,18 @@ import 'package:pieno/models.dart';
 class UserState extends ChangeNotifier {
   String? token;
   String? username;
-  Car? activeCar;
+  Car? _activeCar;
 
-  UserState({
+  set activeCar(Car? car) {
+    _activeCar = car;
+    notifyListeners();
+  }
+
+  Car? get activeCar => _activeCar;
+
+  UserState(
     this.token,
     this.username,
-    this.activeCar,
-  });
+    this._activeCar,
+  );
 }

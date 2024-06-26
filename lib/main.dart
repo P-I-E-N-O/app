@@ -8,10 +8,15 @@ void main() {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
       create: (_) => UserState(
-        token: "ciao",
-        username: "Boss",
-        activeCar: Car(
+        "ciao",
+        "Boss",
+        Car(
           name: "R4",
+          plateNo: "AA000AA",
+          tankSize: 100,
+          size: "piccola",
+          ownerId: "Boss",
+          id: "R4",
           fuelLevel: 78,
           fuelType: FuelType.balls,
         ),

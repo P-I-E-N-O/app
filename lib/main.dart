@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitUp,
     ]);
     return MaterialApp(
-      home: const MyHomePage(),
+      home: const SplashScreen(),
       theme: ThemeData(
         fontFamily: 'futura',
       ),
@@ -50,14 +50,66 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _navigateToHome();
+  }
+
+  _navigateToHome() async {
+    await Future.delayed(const Duration(seconds: 5), () {});
+    Navigator.pushReplacement(
+      // ignore: use_build_context_synchronously
+      context,
+      MaterialPageRoute(builder: (context) => const StartingPage()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 6, 17, 63),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Stack(
+            children: [
+              Lottie.asset("assets/red_car.json", fit: BoxFit.contain),
+              Positioned(
+                top: 220000 / MediaQuery.of(context).size.height,
+                left: 55000 / MediaQuery.of(context).size.width,
+                child: const Text(
+                  "P.I.E.N.O.",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
+                  ),
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class StartingPage extends StatefulWidget {
+  const StartingPage({super.key});
+
+  @override
+  State<StartingPage> createState() => _StartingPageState();
+}
+
+class _StartingPageState extends State<StartingPage> {
   @override
   Widget build(BuildContext context) {
     var state = context.watch<UserState>();
@@ -165,12 +217,13 @@ class HomePage extends StatelessWidget {
                       width: 300.0,
                       height: 150.0,
                       child: OverflowBox(
-                          maxHeight: 300,
-                          child: SizedBox(
-                            height: 300.0,
-                            child: Lottie.asset("assets/red_car.json",
-                                fit: BoxFit.contain),
-                          )),
+                        maxHeight: 300,
+                        child: SizedBox(
+                          height: 300.0,
+                          child: Lottie.asset("assets/red_car.json",
+                              fit: BoxFit.contain),
+                        ),
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

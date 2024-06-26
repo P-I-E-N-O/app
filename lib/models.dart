@@ -6,12 +6,12 @@ enum FuelType { petrol, diesel, lpg, cng, electric, balls }
 
 extension FuelTypeString on FuelType {
   String get string => switch (this) {
-        FuelType.balls => "Palline",
-        FuelType.petrol => "Benzina",
-        FuelType.diesel => "Nafta",
-        FuelType.cng => "Metano",
-        FuelType.lpg => "GPL",
-        FuelType.electric => "Elettrico",
+        FuelType.balls => "Little Balls",
+        FuelType.petrol => "Gasoline",
+        FuelType.diesel => "Diesel",
+        FuelType.cng => "CNG",
+        FuelType.lpg => "LPG",
+        FuelType.electric => "Electric",
       };
 }
 

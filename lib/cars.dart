@@ -55,9 +55,15 @@ class _CarsPageState extends State<CarsPage> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text("Active car confirmation"),
+        backgroundColor: const Color.fromARGB(255, 6, 17, 63),
+        title: const Text(
+          "Active car confirmation",
+          style: TextStyle(color: Colors.white),
+        ),
         content: Text(
-            "Are you sure you want to set your ${cars![index].name} as your active car?"),
+          "Are you sure you want to set your ${cars![index].name} as your active car?",
+          style: const TextStyle(color: Colors.blueGrey),
+        ),
         actions: [
           TextButton(
               onPressed: () {
@@ -65,12 +71,18 @@ class _CarsPageState extends State<CarsPage> {
                     cars![index];
                 Navigator.pop(context);
               },
-              child: const Text("OK")),
+              child: const Text(
+                "OK",
+                style: TextStyle(color: Colors.blueGrey),
+              )),
           TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text("Cancel")),
+              child: const Text(
+                "Cancel",
+                style: TextStyle(color: Colors.blueGrey),
+              )),
         ],
       ),
     );
@@ -79,6 +91,7 @@ class _CarsPageState extends State<CarsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 6, 17, 63),
       body: cars == null
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -87,13 +100,38 @@ class _CarsPageState extends State<CarsPage> {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
-                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(0xFF3b75b2),
+                        Colors.indigo,
+                      ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.indigo.withOpacity(0.5),
+                        spreadRadius: 3,
+                        blurRadius: 5,
+                        offset: const Offset(0, 0.5),
+                      ),
+                    ],
                   ),
                   child: ListTile(
                     onTap: () => setAsActive(i),
-                    title: Text(cars![i].name),
-                    subtitle: Text(cars![i].fuelType.string),
-                    trailing: const Icon(Icons.delete),
+                    title: Text(
+                      cars![i].name,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    subtitle: Text(
+                      cars![i].fuelType.string,
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                    trailing: GestureDetector(
+                      onTap: () {},
+                      child: const Icon(
+                        Icons.delete,
+                        color: Colors.grey,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -101,7 +139,11 @@ class _CarsPageState extends State<CarsPage> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.indigo,
+        child: const Icon(
+          Icons.add,
+          color: Colors.grey,
+        ),
       ),
     );
   }

@@ -28,3 +28,12 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+
+  fonts:
+    - family: futura
+      fonts:
+        - asset: fonts/futura/FuturaPTCondMedium.otf
+        - asset: fonts/futura/FuturaPTCondMediumOblique.otf
+          style: italic
+        - asset: fonts/futura/FuturaPTBold.otf
+          weight: 700

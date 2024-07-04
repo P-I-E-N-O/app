@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pieno/add_car_form.dart';
 import 'package:pieno/models.dart';
 import 'package:pieno/state.dart';
 import 'package:provider/provider.dart';
@@ -138,7 +139,14 @@ class _CarsPageState extends State<CarsPage> {
               itemCount: cars!.length,
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddCarForm(),
+            ),
+          );
+        },
         backgroundColor: Colors.indigo,
         child: const Icon(
           Icons.add,

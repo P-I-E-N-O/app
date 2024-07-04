@@ -85,7 +85,10 @@ class _SplashScreenState extends State<SplashScreen> {
         children: [
           Stack(
             children: [
-              Lottie.asset("assets/red_car.json", fit: BoxFit.contain),
+              Lottie.asset(
+                "assets/red_car.json",
+                fit: BoxFit.contain,
+              ),
               Positioned(
                 top: 220000 / MediaQuery.of(context).size.height,
                 left: 55000 / MediaQuery.of(context).size.width,
@@ -96,7 +99,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     fontSize: 30,
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ],
@@ -145,17 +148,18 @@ class HomePage extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      endDrawer: const Drawer(
-        backgroundColor: Color.fromARGB(255, 3, 8, 31),
+      endDrawer: Drawer(
+        backgroundColor: const Color.fromARGB(255, 3, 8, 31),
         shadowColor: Colors.grey,
         child: Column(
           children: [
-            DrawerHeader(
+            const DrawerHeader(
               child: Text(
-                "Bono er Burger",
+                "Recap",
                 style: TextStyle(color: Colors.white),
               ),
             ),
+            Text(state.username!),
           ],
         ),
       ),
@@ -211,7 +215,9 @@ class HomePage extends StatelessWidget {
                           Text(
                             state.activeCar!.name,
                             style: const TextStyle(
-                                color: Colors.white, fontSize: 30),
+                              color: Colors.white,
+                              fontSize: 30,
+                            ),
                           ),
                         ],
                       ),
@@ -286,13 +292,19 @@ class HomePage extends StatelessWidget {
                 child: SfCartesianChart(
                   title: ChartTitle(
                     text: "${state.activeCar!.fuelType.string} Price Trend",
-                    textStyle: const TextStyle(color: Colors.white),
+                    textStyle: const TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
                   primaryXAxis: const CategoryAxis(
-                    labelStyle: TextStyle(color: Colors.white),
+                    labelStyle: TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
                   primaryYAxis: const NumericAxis(
-                    labelStyle: TextStyle(color: Colors.white),
+                    labelStyle: TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
                   series: <CartesianSeries>[
                     ColumnSeries<PriceData, String>(
@@ -341,7 +353,9 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.04),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.04,
+              ),
             ],
           ),
         ),

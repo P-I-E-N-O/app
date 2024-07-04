@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pieno/cars.dart';
 import 'package:pieno/io/http.dart';
+import 'package:pieno/login.dart';
 import 'package:pieno/models.dart';
 import 'package:pieno/state.dart';
 import 'package:provider/provider.dart';
@@ -237,8 +238,7 @@ class HomePage extends StatelessWidget {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 15),
                               child: LiquidLinearProgressIndicator(
-                                value: state.activeCar!.fuelLevel /
-                                    100, // Defaults to 0.5.
+                                value: state.activeCar!.fuelLevel / 100,
                                 valueColor: const AlwaysStoppedAnimation(
                                   Color.fromARGB(255, 2, 120, 231),
                                 ),
@@ -285,8 +285,9 @@ class HomePage extends StatelessWidget {
                 ),
                 child: SfCartesianChart(
                   title: ChartTitle(
-                      text: "${state.activeCar!.fuelType.string} Price Trend",
-                      textStyle: const TextStyle(color: Colors.white)),
+                    text: "${state.activeCar!.fuelType.string} Price Trend",
+                    textStyle: const TextStyle(color: Colors.white),
+                  ),
                   primaryXAxis: const CategoryAxis(
                     labelStyle: TextStyle(color: Colors.white),
                   ),
@@ -346,15 +347,6 @@ class HomePage extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
 

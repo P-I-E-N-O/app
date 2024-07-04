@@ -1,18 +1,20 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pieno/cars.dart';
+import 'package:pieno/io/http.dart';
 import 'package:pieno/models.dart';
 import 'package:pieno/state.dart';
 import 'package:provider/provider.dart';
 import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-//import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 
-//original color
-//backgroundColor: const Color.fromARGB(255, 3, 8, 31),
 void main() {
   runApp(MultiProvider(providers: [
+    Provider(
+      create: (_) => Api(client: Dio()),
+    ),
     ChangeNotifierProvider(
       create: (_) => UserState(
         "ciao",

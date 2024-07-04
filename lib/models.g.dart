@@ -15,7 +15,7 @@ Car _$CarFromJson(Map<String, dynamic> json) => Car(
       tankSize: (json['tank_size'] as num).toInt(),
       ownerId: json['owner_id'] as String,
       id: json['id'] as String,
-    );
+    )..imageUrl = json['image_url'] as String?;
 
 Map<String, dynamic> _$CarToJson(Car instance) => <String, dynamic>{
       'id': instance.id,
@@ -37,3 +37,58 @@ const _$FuelTypeEnumMap = {
   FuelType.electric: 'electric',
   FuelType.balls: 'balls',
 };
+
+User _$UserFromJson(Map<String, dynamic> json) => User(
+      name: json['name'] as String,
+      surname: json['surname'] as String,
+      email: json['email'] as String,
+      password: json['password'] as String,
+    );
+
+Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
+      'name': instance.name,
+      'surname': instance.surname,
+      'email': instance.email,
+      'password': instance.password,
+    };
+
+Pump _$PumpFromJson(Map<String, dynamic> json) => Pump(
+      indirizzo: json['indirizzo'] as String,
+      latitudine: (json['latitudine'] as num).toDouble(),
+      longitudine: (json['longitudine'] as num).toDouble(),
+      fuelPrices: (json['fuel_prices'] as Map<String, dynamic>).map(
+        (k, e) => MapEntry(
+            $enumDecode(_$FuelTypeEnumMap, k), (e as num?)?.toDouble()),
+      ),
+      id: (json['id'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$PumpToJson(Pump instance) => <String, dynamic>{
+      'id': instance.id,
+      'indirizzo': instance.indirizzo,
+      'latitudine': instance.latitudine,
+      'longitudine': instance.longitudine,
+      'fuel_prices':
+          instance.fuelPrices.map((k, e) => MapEntry(_$FuelTypeEnumMap[k]!, e)),
+    };
+
+Prediction _$PredictionFromJson(Map<String, dynamic> json) => Prediction(
+      data: json['data'] as String,
+      pred: (json['pred'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$PredictionToJson(Prediction instance) =>
+    <String, dynamic>{
+      'data': instance.data,
+      'pred': instance.pred,
+    };
+
+Price _$PriceFromJson(Map<String, dynamic> json) => Price(
+      data: json['data'] as String,
+      prezzo: (json['prezzo'] as num).toDouble(),
+    );
+
+Map<String, dynamic> _$PriceToJson(Price instance) => <String, dynamic>{
+      'data': instance.data,
+      'prezzo': instance.prezzo,
+    };

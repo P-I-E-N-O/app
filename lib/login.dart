@@ -10,10 +10,15 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool showPassword = false;
-
   void toggleShowPassword() => setState(() {
         showPassword = !showPassword;
       });
+
+  Map<String, TextEditingController> credentials = {
+    "username": TextEditingController(),
+    "password": TextEditingController(),
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,14 +47,15 @@ class _LoginPageState extends State<LoginPage> {
               borderRadius: BorderRadius.circular(100),
               color: Colors.white,
             ),
-            child: const Center(
+            child: Center(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                padding: const EdgeInsets.only(left: 12),
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: "Username",
                   ),
+                  controller: credentials["username"],
                 ),
               ),
             ),
@@ -65,11 +71,17 @@ class _LoginPageState extends State<LoginPage> {
               color: Colors.white,
             ),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(10, 6, 0, 0),
+              padding: const EdgeInsets.only(
+                left: 10,
+                top: 6,
+              ),
               child: TextField(
                 decoration: InputDecoration(
                   suffixIcon: Padding(
-                    padding: const EdgeInsets.fromLTRB(5, 0, 0, 6),
+                    padding: const EdgeInsets.only(
+                      left: 5,
+                      bottom: 6,
+                    ),
                     child: IconButton(
                       onPressed: toggleShowPassword,
                       icon: !showPassword
@@ -89,6 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: !showPassword,
                 enableSuggestions: false,
                 autocorrect: false,
+                controller: credentials["password"],
               ),
             ),
           ),

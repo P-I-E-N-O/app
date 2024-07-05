@@ -155,9 +155,7 @@ class _RegisterPageState extends State<RegisterPage> {
               horizontal: MediaQuery.of(context).size.width * 0.05,
             ),
             child: MaterialButton(
-              onPressed: () {
-                print('poggaceo');
-              },
+              onPressed: () {},
               height: MediaQuery.of(context).size.height * 0.06,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),

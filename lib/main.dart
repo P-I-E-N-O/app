@@ -18,17 +18,17 @@ void main() {
     ),
     ChangeNotifierProvider(
       create: (_) => UserState(
-        "ciao",
-        "Boss",
+        "null",
+        "Marco",
         Car(
           name: "R4",
           plateNo: "AA000AA",
           tankSize: 100,
           size: "piccola",
-          ownerId: "Boss",
+          ownerId: "Carmine",
           id: "R4",
           fuelLevel: 78,
-          fuelType: FuelType.balls,
+          fuelType: FuelType.petrol,
         ),
       ),
     ),
@@ -90,8 +90,8 @@ class _SplashScreenState extends State<SplashScreen> {
                 fit: BoxFit.contain,
               ),
               Positioned(
-                top: 220000 / MediaQuery.of(context).size.height,
-                left: 55000 / MediaQuery.of(context).size.width,
+                top: MediaQuery.of(context).size.height * 0.3,
+                left: MediaQuery.of(context).size.width * 0.35,
                 child: const Text(
                   "P.I.E.N.O.",
                   style: TextStyle(
@@ -141,7 +141,7 @@ class HomePage extends StatelessWidget {
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.transparent,
         title: Text(
-          "Salve ${state.activeCar!.ownerId}",
+          "Welcome back ${state.username!}!",
           style: const TextStyle(
             color: Colors.white,
           ),
@@ -275,8 +275,10 @@ class HomePage extends StatelessWidget {
                         maxHeight: 300,
                         child: SizedBox(
                           height: 300.0,
-                          child: Lottie.asset("assets/red_car.json",
-                              fit: BoxFit.contain),
+                          child: Lottie.asset(
+                            "assets/red_car.json",
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                     ),
@@ -292,7 +294,7 @@ class HomePage extends StatelessWidget {
                               child: LiquidLinearProgressIndicator(
                                 value: state.activeCar!.fuelLevel / 100,
                                 valueColor: const AlwaysStoppedAnimation(
-                                  Color.fromARGB(255, 2, 120, 231),
+                                  Color.fromARGB(255, 0, 132, 255),
                                 ),
                                 backgroundColor:
                                     const Color.fromARGB(255, 7, 45, 114),
@@ -348,15 +350,20 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                   primaryYAxis: const NumericAxis(
-                    labelStyle: TextStyle(
-                      color: Colors.white,
-                    ),
+                    isVisible: false,
                   ),
                   series: <CartesianSeries>[
                     ColumnSeries<PriceData, String>(
                       dataSource: getColumnData(),
                       xValueMapper: (PriceData price, _) => price.x,
                       yValueMapper: (PriceData price, _) => price.y,
+                      pointColorMapper: (PriceData price, _) => price.color,
+                      dataLabelSettings: const DataLabelSettings(
+                        isVisible: true,
+                        textStyle: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
                     )
                   ],
                 ),
@@ -411,19 +418,29 @@ class HomePage extends StatelessWidget {
 class PriceData {
   String x;
   double y;
-  PriceData(this.x, this.y);
+  Color? color;
+  PriceData(this.x, this.y,
+      [this.color = const Color.fromARGB(255, 0, 132, 255)]);
 }
 
 dynamic getColumnData() {
   List<PriceData> columnData = <PriceData>[
-    PriceData("14-06", 1.789),
-    PriceData("15-06", 1.799),
-    PriceData("16-06", 1.798),
-    PriceData("17-06", 1.800),
-    PriceData("18-06", 1.789),
-    PriceData("19-06", 1.801),
-    PriceData("20-06", 1.821),
+    PriceData("30-06", 1.789),
+    PriceData("01-07", 1.799),
+    PriceData("02-07", 1.798),
+    PriceData("03-07", 1.809),
+    PriceData("04-07", 1.789),
+    PriceData("05-07", 1.801),
   ];
 
+  double lastPrice = columnData.last.y;
+  double forecastedPrice = 1.798;
+  Color? forecastColor = const Color.fromARGB(255, 0, 132, 255);
+  if (forecastedPrice > lastPrice) {
+    forecastColor = Colors.red;
+  } else if (forecastedPrice < lastPrice) {
+    forecastColor = Colors.green;
+  }
+  columnData.add(PriceData("Forecast", forecastedPrice, forecastColor));
   return columnData;
 }

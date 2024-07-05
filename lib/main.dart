@@ -67,7 +67,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToHome() async {
-    await Future.delayed(const Duration(seconds: 5), () {});
+    await Future.delayed(const Duration(seconds: 2), () {});
     Navigator.pushReplacement(
       // ignore: use_build_context_synchronously
       context,
@@ -153,13 +153,59 @@ class HomePage extends StatelessWidget {
         shadowColor: Colors.grey,
         child: Column(
           children: [
-            const DrawerHeader(
-              child: Text(
-                "Recap",
-                style: TextStyle(color: Colors.white),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.12,
+              child: const DrawerHeader(
+                child: Text(
+                  "Recap",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                  ),
+                ),
               ),
             ),
-            Text(state.username!),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.006,
+            ),
+            Text(
+              state.username!,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.004,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.2),
+              child: MaterialButton(
+                onPressed: () {},
+                color: const Color(0xFF367980),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Logout",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
+                    Icon(
+                      Icons.logout,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -317,9 +363,7 @@ class HomePage extends StatelessWidget {
               ),
               SizedBox(height: MediaQuery.of(context).size.height * 0.07),
               GestureDetector(
-                onTap: () {
-                  //print("aaaaaaaaaaaa");
-                },
+                onTap: () {},
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.11,
                   decoration: BoxDecoration(

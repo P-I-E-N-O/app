@@ -85,6 +85,28 @@ class _AddCarFormState extends State<AddCarForm> {
               borderRadius: BorderRadius.circular(100),
               color: Colors.white,
             ),
+            child: const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: TextField(
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: "Tank Size",
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.01,
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: MediaQuery.of(context).size.height * 0.06,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+              color: Colors.white,
+            ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: DropdownButtonHideUnderline(

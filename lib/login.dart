@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:pieno/main.dart';
 import 'package:pieno/register.dart';
+import 'package:pieno/io/http.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -10,14 +14,48 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool showPassword = false;
+  bool redBorder = false;
+  Map<String, TextEditingController> credentials = {
+    "email": TextEditingController(),
+    "password": TextEditingController(),
+  };
+
   void toggleShowPassword() => setState(() {
         showPassword = !showPassword;
       });
+  void toggleRedBorder() => setState(() {
+        redBorder = true;
+      });
 
-  Map<String, TextEditingController> credentials = {
-    "username": TextEditingController(),
-    "password": TextEditingController(),
-  };
+  Future<void> checkLogin() async {
+    String email = credentials["email"]!.text;
+    String password = credentials["password"]!.text;
+
+    try {
+      final token =
+          await Provider.of<Api>(context, listen: false).logIn(email, password);
+
+      await const FlutterSecureStorage().write(
+        key: "token",
+        value: token,
+      );
+      Provider.of<Api>(context, listen: false).setToken(token);
+      Provider.of<Api>(context, listen: false).getLoggedInUser();
+    } catch (e) {
+      toggleRedBorder();
+      SnackBar snackBar = const SnackBar(
+        backgroundColor: Colors.black,
+        content: Text(
+          "Invalid email or password",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +84,8 @@ class _LoginPageState extends State<LoginPage> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100),
               color: Colors.white,
+              border: Border.all(
+                  color: redBorder ? Colors.red : Colors.transparent),
             ),
             child: Center(
               child: Padding(
@@ -53,9 +93,9 @@ class _LoginPageState extends State<LoginPage> {
                 child: TextField(
                   decoration: const InputDecoration(
                     border: InputBorder.none,
-                    hintText: "Username",
+                    hintText: "Email",
                   ),
-                  controller: credentials["username"],
+                  controller: credentials["email"],
                 ),
               ),
             ),
@@ -69,6 +109,8 @@ class _LoginPageState extends State<LoginPage> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100),
               color: Colors.white,
+              border: Border.all(
+                  color: redBorder ? Colors.red : Colors.transparent),
             ),
             child: Padding(
               padding: const EdgeInsets.only(
@@ -113,7 +155,15 @@ class _LoginPageState extends State<LoginPage> {
               horizontal: MediaQuery.of(context).size.width * 0.05,
             ),
             child: MaterialButton(
-              onPressed: () {},
+              onPressed: () {
+                checkLogin();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomePage(),
+                  ),
+                );
+              },
               height: MediaQuery.of(context).size.height * 0.06,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
@@ -162,7 +212,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.02,
-          )
+          ),
         ],
       ),
     );

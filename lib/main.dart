@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:location/location.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pieno/cars.dart';
 import 'package:pieno/io/http.dart';
@@ -37,7 +38,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -130,6 +130,20 @@ class _StartingPageState extends State<StartingPage> {
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
+  Future<void> getPump(int tankSize, int fuelLevel, FuelType fuelType) async {
+    double latitude;
+    double longitude;
+    Map<String, double> consPerKm = {
+      "small": 0.05,
+      "medium": 0.1,
+      "big": 0.15,
+    };
+    Location location = Location();
+    LocationData locationData = await location.getLocation();
+    latitude = locationData.latitude!;
+    longitude = locationData.longitude!;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -370,7 +384,10 @@ class HomePage extends StatelessWidget {
               ),
               SizedBox(height: MediaQuery.of(context).size.height * 0.07),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  getPump(state.activeCar!.tankSize, state.activeCar!.fuelLevel,
+                      state.activeCar!.fuelType);
+                },
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.11,
                   decoration: BoxDecoration(

@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:pieno/main.dart';
+import 'package:pieno/models.dart';
+import 'package:provider/provider.dart';
+import 'package:pieno/io/http.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -8,6 +13,62 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  bool isSamePassword = true;
+
+  Map<String, TextEditingController> data = {
+    "name": TextEditingController(),
+    "surname": TextEditingController(),
+    "username": TextEditingController(),
+    "email": TextEditingController(),
+    "password": TextEditingController(),
+    "confirmPassword": TextEditingController(),
+  };
+
+  Future<void> register() async {
+    String name = data["name"]!.text;
+    String surname = data["surname"]!.text;
+    String email = data["email"]!.text;
+    String password = data["password"]!.text;
+    String confirmPassword = data["confirmPassword"]!.text;
+
+    if (password != confirmPassword) {
+      isSamePassword = false;
+      return;
+    } else {
+      try {
+        final response =
+            await Provider.of<Api>(context, listen: false).addUser(User(
+          name: name,
+          surname: surname,
+          email: email,
+          password: password,
+        ));
+        if (response.data["success"] as bool) {
+          Provider.of<Api>(context, listen: false).setToken(
+            response.data["token"],
+          );
+          await const FlutterSecureStorage().write(
+            key: "token",
+            value: response.data["token"],
+          );
+          Provider.of<Api>(context, listen: false).getLoggedInUser();
+        }
+      } catch (e) {
+        SnackBar snackBar = const SnackBar(
+          backgroundColor: Colors.black,
+          content: Text(
+            "Passwords do not match",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,6 +173,9 @@ class _RegisterPageState extends State<RegisterPage> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100),
               color: Colors.white,
+              border: Border.all(
+                color: isSamePassword ? Colors.transparent : Colors.red,
+              ),
             ),
             child: const Center(
               child: Padding(
@@ -134,6 +198,9 @@ class _RegisterPageState extends State<RegisterPage> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100),
               color: Colors.white,
+              border: Border.all(
+                color: isSamePassword ? Colors.transparent : Colors.red,
+              ),
             ),
             child: const Center(
               child: Padding(
@@ -155,7 +222,15 @@ class _RegisterPageState extends State<RegisterPage> {
               horizontal: MediaQuery.of(context).size.width * 0.05,
             ),
             child: MaterialButton(
-              onPressed: () {},
+              onPressed: () {
+                register();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomePage(),
+                  ),
+                );
+              },
               height: MediaQuery.of(context).size.height * 0.06,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),

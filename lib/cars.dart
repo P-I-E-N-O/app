@@ -77,13 +77,14 @@ class _CarsPageState extends State<CarsPage> {
                 style: TextStyle(color: Colors.blueGrey),
               )),
           TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text(
-                "Cancel",
-                style: TextStyle(color: Colors.blueGrey),
-              )),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text(
+              "Cancel",
+              style: TextStyle(color: Colors.blueGrey),
+            ),
+          ),
         ],
       ),
     );

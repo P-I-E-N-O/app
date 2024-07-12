@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pieno/main.dart';
 import 'package:pieno/register.dart';
 import 'package:pieno/io/http.dart';
+import 'package:pieno/widgets/snackbars.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -28,6 +29,11 @@ class _LoginPageState extends State<LoginPage> {
       });
 
   Future<void> checkLogin() async {
+    if (credentials["email"]!.text.isEmpty ||
+        credentials["password"]!.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(allFieldsRequired);
+      return;
+    }
     String email = credentials["email"]!.text;
     String password = credentials["password"]!.text;
 
@@ -41,19 +47,16 @@ class _LoginPageState extends State<LoginPage> {
       );
       Provider.of<Api>(context, listen: false).setToken(token);
       Provider.of<Api>(context, listen: false).getLoggedInUser();
-    } catch (e) {
-      toggleRedBorder();
-      SnackBar snackBar = const SnackBar(
-        backgroundColor: Colors.black,
-        content: Text(
-          "Invalid email or password",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white,
-          ),
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const HomePage(),
         ),
       );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } catch (e) {
+      toggleRedBorder();
+      ScaffoldMessenger.of(context).showSnackBar(invalidEmailOrPassword);
     }
   }
 
@@ -157,12 +160,6 @@ class _LoginPageState extends State<LoginPage> {
             child: MaterialButton(
               onPressed: () {
                 checkLogin();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const HomePage(),
-                  ),
-                );
               },
               height: MediaQuery.of(context).size.height * 0.06,
               shape: RoundedRectangleBorder(

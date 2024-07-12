@@ -1,7 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pieno/main.dart';
 import 'package:pieno/models.dart';
+import 'package:pieno/widgets/snackbars.dart';
 import 'package:provider/provider.dart';
 import 'package:pieno/io/http.dart';
 
@@ -25,6 +27,15 @@ class _RegisterPageState extends State<RegisterPage> {
   };
 
   Future<void> register() async {
+    if (data["name"]!.text.isEmpty ||
+        data["surname"]!.text.isEmpty ||
+        data["email"]!.text.isEmpty ||
+        data["password"]!.text.isEmpty ||
+        data["confirmPassword"]!.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(allFieldsRequired);
+      return;
+    }
+
     String name = data["name"]!.text;
     String surname = data["surname"]!.text;
     String email = data["email"]!.text;
@@ -32,9 +43,15 @@ class _RegisterPageState extends State<RegisterPage> {
     String confirmPassword = data["confirmPassword"]!.text;
 
     if (password != confirmPassword) {
-      isSamePassword = false;
+      setState(() {
+        isSamePassword = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(passwordsDoNotMatch);
       return;
     } else {
+      setState(() {
+        isSamePassword = true;
+      });
       try {
         final response =
             await Provider.of<Api>(context, listen: false).addUser(User(
@@ -52,19 +69,17 @@ class _RegisterPageState extends State<RegisterPage> {
             value: response.data["token"],
           );
           Provider.of<Api>(context, listen: false).getLoggedInUser();
-        }
-      } catch (e) {
-        SnackBar snackBar = const SnackBar(
-          backgroundColor: Colors.black,
-          content: Text(
-            "Passwords do not match",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const HomePage(),
             ),
-          ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          );
+        }
+      } on DioException catch (e) {
+        if (e.response?.statusCode == 400) {
+          ScaffoldMessenger.of(context).showSnackBar(invalidEmailOrPassword);
+        }
       }
     }
   }
@@ -90,17 +105,6 @@ class _RegisterPageState extends State<RegisterPage> {
           SizedBox(
             height: MediaQuery.of(context).size.width * 0.05,
           ),
-          const IconButton(
-            onPressed: null,
-            icon: Icon(
-              Icons.add_a_photo_outlined,
-              size: 100,
-              color: Colors.white,
-            ),
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.width * 0.05,
-          ),
           Container(
             width: MediaQuery.of(context).size.width * 0.9,
             height: MediaQuery.of(context).size.height * 0.06,
@@ -108,14 +112,15 @@ class _RegisterPageState extends State<RegisterPage> {
               borderRadius: BorderRadius.circular(100),
               color: Colors.white,
             ),
-            child: const Center(
+            child: Center(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: "Name*",
                   ),
+                  controller: data["name"],
                 ),
               ),
             ),
@@ -130,14 +135,15 @@ class _RegisterPageState extends State<RegisterPage> {
               borderRadius: BorderRadius.circular(100),
               color: Colors.white,
             ),
-            child: const Center(
+            child: Center(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: "Surname*",
                   ),
+                  controller: data["surname"],
                 ),
               ),
             ),
@@ -152,14 +158,15 @@ class _RegisterPageState extends State<RegisterPage> {
               borderRadius: BorderRadius.circular(100),
               color: Colors.white,
             ),
-            child: const Center(
+            child: Center(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: "Email*",
                   ),
+                  controller: data["email"],
                 ),
               ),
             ),
@@ -175,16 +182,18 @@ class _RegisterPageState extends State<RegisterPage> {
               color: Colors.white,
               border: Border.all(
                 color: isSamePassword ? Colors.transparent : Colors.red,
+                width: 2,
               ),
             ),
-            child: const Center(
+            child: Center(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: "Password*",
                   ),
+                  controller: data["password"],
                 ),
               ),
             ),
@@ -200,16 +209,18 @@ class _RegisterPageState extends State<RegisterPage> {
               color: Colors.white,
               border: Border.all(
                 color: isSamePassword ? Colors.transparent : Colors.red,
+                width: 2,
               ),
             ),
-            child: const Center(
+            child: Center(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: "Confirm password*",
                   ),
+                  controller: data["confirmPassword"],
                 ),
               ),
             ),
@@ -224,12 +235,6 @@ class _RegisterPageState extends State<RegisterPage> {
             child: MaterialButton(
               onPressed: () {
                 register();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const HomePage(),
-                  ),
-                );
               },
               height: MediaQuery.of(context).size.height * 0.06,
               shape: RoundedRectangleBorder(

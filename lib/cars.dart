@@ -3,7 +3,6 @@ import 'package:pieno/add_car_form.dart';
 import 'package:pieno/models.dart';
 import 'package:pieno/state.dart';
 import 'package:provider/provider.dart';
-import 'package:pieno/io/http.dart' as http;
 
 void main() {
   runApp(MultiProvider(
@@ -41,7 +40,8 @@ class _CarsPageState extends State<CarsPage> {
   List<Car>? cars;
 
   void initCars() async {
-    cars = await http.getUserCars();
+    var state = context.watch<UserState>();
+    cars = await state.getCars(context);
     setState(() {});
   }
 

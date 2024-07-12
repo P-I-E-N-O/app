@@ -15,23 +15,15 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 void main() {
   runApp(MultiProvider(providers: [
     Provider(
-      create: (_) => Api(client: Dio()),
+      create: (_) => Api(
+          client: Dio(
+        BaseOptions(
+          baseUrl: "https://backend.pieno.dev/",
+        ),
+      )),
     ),
     ChangeNotifierProvider(
-      create: (_) => UserState(
-        "null",
-        "Marco",
-        Car(
-          name: "R4",
-          plateNo: "AA000AA",
-          tankSize: 100,
-          size: "piccola",
-          ownerId: "Carmine",
-          id: "R4",
-          fuelLevel: 78,
-          fuelType: FuelType.petrol,
-        ),
-      ),
+      create: (_) => UserState(),
     ),
   ], child: const MyApp()));
 }
@@ -131,7 +123,8 @@ class _StartingPageState extends State<StartingPage> {
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  Future<void> getPump(int tankSize, int fuelLevel, FuelType fuelType) async {
+  Future<Pump> getPump(BuildContext context, int tankSize, int fuelLevel,
+      FuelType fuelType) async {
     double latitude;
     double longitude;
     Map<String, double> consPerKm = {
@@ -143,11 +136,23 @@ class HomePage extends StatelessWidget {
     LocationData locationData = await location.getLocation();
     latitude = locationData.latitude!;
     longitude = locationData.longitude!;
+
+    // ignore: use_build_context_synchronously
+    Pump pump = await Provider.of<Api>(context, listen: false).getBestPump(
+      latitude,
+      longitude,
+      tankSize,
+      fuelLevel,
+      consPerKm[fuelType.name]!,
+    );
+
+    return pump;
   }
 
   @override
   Widget build(BuildContext context) {
     var state = context.watch<UserState>();
+    state.getCars(context);
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 6, 17, 63),
       extendBodyBehindAppBar: true,
@@ -385,8 +390,8 @@ class HomePage extends StatelessWidget {
               SizedBox(height: MediaQuery.of(context).size.height * 0.07),
               GestureDetector(
                 onTap: () {
-                  getPump(state.activeCar!.tankSize, state.activeCar!.fuelLevel,
-                      state.activeCar!.fuelType);
+                  getPump(context, state.activeCar!.tankSize,
+                      state.activeCar!.fuelLevel, state.activeCar!.fuelType);
                 },
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.11,

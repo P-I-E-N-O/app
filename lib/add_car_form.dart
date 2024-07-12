@@ -1,5 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:pieno/io/http.dart';
 import 'package:pieno/models.dart';
+import 'package:pieno/state.dart';
+import 'package:pieno/widgets/snackbars.dart';
+import 'package:provider/provider.dart';
 
 class AddCarForm extends StatefulWidget {
   const AddCarForm({super.key});
@@ -11,6 +16,53 @@ class AddCarForm extends StatefulWidget {
 class _AddCarFormState extends State<AddCarForm> {
   String? dropDownCarSizeValue;
   FuelType? dropDownFuelTypeValue;
+
+  Map<String, TextEditingController> data = {
+    "name": TextEditingController(),
+    "plateNo": TextEditingController(),
+    "tankSize": TextEditingController(),
+    "size": TextEditingController(),
+  };
+
+  Future<void> addCar() async {
+    if (data["name"]!.text.isEmpty ||
+        data["plateNo"]!.text.isEmpty ||
+        data["tankSize"]!.text.isEmpty ||
+        data["size"]!.text.isEmpty ||
+        dropDownFuelTypeValue == null ||
+        dropDownCarSizeValue == null) {
+      ScaffoldMessenger.of(context).showSnackBar(allFieldsRequired);
+      return;
+    }
+
+    String name = data["name"]!.text;
+    String plateNo = data["plateNo"]!.text;
+    int tankSize = int.parse(data["tankSize"]!.text);
+    String size = data["size"]!.text;
+    FuelType fuelType = dropDownFuelTypeValue!;
+    Car car = Car(
+      name: name,
+      plateNo: plateNo,
+      tankSize: tankSize,
+      size: size,
+      fuelType: fuelType,
+      fuelLevel: 0,
+      ownerId: Provider.of<UserState>(context, listen: false).username!,
+      id: '',
+    );
+
+    try {
+      final response =
+          await Provider.of<Api>(context, listen: false).addCar(car);
+      car.id = response.data["car_id"];
+      Navigator.pop(context);
+    } on DioException catch (e) {
+      e.response?.statusCode == 409
+          ? ScaffoldMessenger.of(context).showSnackBar(carAlreadyExists)
+          : ScaffoldMessenger.of(context).showSnackBar(networkError);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,14 +93,15 @@ class _AddCarFormState extends State<AddCarForm> {
               borderRadius: BorderRadius.circular(100),
               color: Colors.white,
             ),
-            child: const Center(
+            child: Center(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: "Name",
                   ),
+                  controller: data['name'],
                 ),
               ),
             ),
@@ -63,14 +116,15 @@ class _AddCarFormState extends State<AddCarForm> {
               borderRadius: BorderRadius.circular(100),
               color: Colors.white,
             ),
-            child: const Center(
+            child: Center(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: "Plate Number",
                   ),
+                  controller: data['plateNo'],
                 ),
               ),
             ),
@@ -85,14 +139,15 @@ class _AddCarFormState extends State<AddCarForm> {
               borderRadius: BorderRadius.circular(100),
               color: Colors.white,
             ),
-            child: const Center(
+            child: Center(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: "Tank Size",
                   ),
+                  controller: data['tankSize'],
                 ),
               ),
             ),
@@ -115,15 +170,15 @@ class _AddCarFormState extends State<AddCarForm> {
                   value: dropDownCarSizeValue,
                   items: const [
                     DropdownMenuItem(
-                      value: "Small",
+                      value: "small",
                       child: Text("Small"),
                     ),
                     DropdownMenuItem(
-                      value: "Medium",
+                      value: "medium",
                       child: Text("Medium"),
                     ),
                     DropdownMenuItem(
-                      value: "Large",
+                      value: "large",
                       child: Text("Large"),
                     ),
                   ],
@@ -175,10 +230,6 @@ class _AddCarFormState extends State<AddCarForm> {
                       value: FuelType.cng,
                       child: Text("CNG"),
                     ),
-                    DropdownMenuItem(
-                      value: FuelType.balls,
-                      child: Text("Little Balls"),
-                    )
                   ],
                   onChanged: (FuelType? value) {
                     setState(
@@ -198,7 +249,9 @@ class _AddCarFormState extends State<AddCarForm> {
             padding: EdgeInsets.symmetric(
                 horizontal: MediaQuery.of(context).size.width * 0.05),
             child: MaterialButton(
-              onPressed: () {},
+              onPressed: () {
+                addCar();
+              },
               minWidth: MediaQuery.of(context).size.width * 0.9,
               height: MediaQuery.of(context).size.height * 0.06,
               color: const Color(0xFF367980),

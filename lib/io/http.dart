@@ -42,12 +42,13 @@ class Api {
   }
 
   Future<Pump> getBestPump(double latitudine, double longitudine, int tanksize,
-      double consPerKm) async {
+      int fuelLevel, double consPerKm) async {
     final response = await client
         .get("/driving-api/api_obtain_data/get_data", queryParameters: {
       'latitudine': latitudine,
       'longitudine': longitudine,
       'serbatoio': tanksize.toString(),
+      'consumo': fuelLevel.toString(),
       'consumo_per_km': consPerKm.toString()
     });
 
@@ -139,37 +140,37 @@ class Api {
   }
 }
 
-Future<List<Car>> getUserCars() async {
-  return [
-    Car(
-      name: "R4",
-      plateNo: "AA000AA",
-      tankSize: 100,
-      size: "piccola",
-      ownerId: "Marco",
-      id: "R4",
-      fuelLevel: 78,
-      fuelType: FuelType.balls,
-    ),
-    Car(
-      name: "R5",
-      plateNo: "AA000AA",
-      tankSize: 120,
-      size: "media",
-      ownerId: "Carmine",
-      id: "R5",
-      fuelLevel: 90,
-      fuelType: FuelType.balls,
-    ),
-    Car(
-      name: "R9",
-      plateNo: "AA000AA",
-      tankSize: 150,
-      size: "grande",
-      ownerId: "Antonio",
-      id: "R9",
-      fuelLevel: 10,
-      fuelType: FuelType.petrol,
-    ),
-  ];
-}
+// Future<List<Car>> getUserCars() async {
+//   return [
+//     Car(
+//       name: "R4",
+//       plateNo: "AA000AA",
+//       tankSize: 100,
+//       size: "piccola",
+//       ownerId: "Marco",
+//       id: "R4",
+//       fuelLevel: 78,
+//       fuelType: FuelType.balls,
+//     ),
+//     Car(
+//       name: "R5",
+//       plateNo: "AA000AA",
+//       tankSize: 120,
+//       size: "media",
+//       ownerId: "Carmine",
+//       id: "R5",
+//       fuelLevel: 90,
+//       fuelType: FuelType.balls,
+//     ),
+//     Car(
+//       name: "R9",
+//       plateNo: "AA000AA",
+//       tankSize: 150,
+//       size: "grande",
+//       ownerId: "Antonio",
+//       id: "R9",
+//       fuelLevel: 10,
+//       fuelType: FuelType.petrol,
+//     ),
+//   ];
+// }

@@ -67,7 +67,6 @@ class Api {
 
   Future<List<Prediction>> getPredictions() async {
     final response = await client.get("/predictions-api/api/get_predizioni");
-    //print(response);
     final predictions = response.data["predizioni"];
     return (predictions as List<dynamic>)
         .map<Prediction>((e) => Prediction.fromJson(e))
@@ -76,7 +75,6 @@ class Api {
 
   Future<List<Price>> getPrices() async {
     final response = await client.get("/predictions-api/api/get_prezzi");
-    //print(response);
     final price = response.data["prezzi"];
     return (price as List<dynamic>)
         .map<Price>((e) => Price.fromJson(e))
@@ -139,38 +137,3 @@ class Api {
     return response;
   }
 }
-
-// Future<List<Car>> getUserCars() async {
-//   return [
-//     Car(
-//       name: "R4",
-//       plateNo: "AA000AA",
-//       tankSize: 100,
-//       size: "piccola",
-//       ownerId: "Marco",
-//       id: "R4",
-//       fuelLevel: 78,
-//       fuelType: FuelType.balls,
-//     ),
-//     Car(
-//       name: "R5",
-//       plateNo: "AA000AA",
-//       tankSize: 120,
-//       size: "media",
-//       ownerId: "Carmine",
-//       id: "R5",
-//       fuelLevel: 90,
-//       fuelType: FuelType.balls,
-//     ),
-//     Car(
-//       name: "R9",
-//       plateNo: "AA000AA",
-//       tankSize: 150,
-//       size: "grande",
-//       ownerId: "Antonio",
-//       id: "R9",
-//       fuelLevel: 10,
-//       fuelType: FuelType.petrol,
-//     ),
-//   ];
-// }

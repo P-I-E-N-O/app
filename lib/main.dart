@@ -7,6 +7,7 @@ import 'package:pieno/cars.dart';
 import 'package:pieno/io/http.dart';
 import 'package:pieno/login.dart';
 import 'package:pieno/models.dart';
+import 'package:pieno/services/bluetooth.dart';
 import 'package:pieno/state.dart';
 import 'package:provider/provider.dart';
 import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
+    BluetoothService().startScanAndConnect();
     return MaterialApp(
       home: const SplashScreen(),
       theme: ThemeData(
@@ -390,8 +392,8 @@ class HomePage extends StatelessWidget {
               SizedBox(height: MediaQuery.of(context).size.height * 0.07),
               GestureDetector(
                 onTap: () {
-                  getPump(context, state.activeCar!.tankSize,
-                      state.activeCar!.fuelLevel, state.activeCar!.fuelType);
+                  //getPump(context, state.activeCar!.tankSize,
+                  //state.activeCar!.fuelLevel, state.activeCar!.fuelType);
                 },
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.11,

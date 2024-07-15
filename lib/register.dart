@@ -75,7 +75,7 @@ class _RegisterPageState extends State<RegisterPage> {
               await Provider.of<Api>(context, listen: false).getLoggedInUser();
 
           Provider.of<UserState>(context, listen: false).username = user!.name;
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => const HomePage(),

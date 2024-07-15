@@ -58,7 +58,6 @@ class _AddCarFormState extends State<AddCarForm> {
       car.token = response.carToken;
       state.getCars(context);
       if (state.activeCar == null) {
-        print("oooo");
         state.activeCar = car;
         writeIndexToFile("0");
       }

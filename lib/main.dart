@@ -7,7 +7,6 @@ import 'package:lottie/lottie.dart';
 import 'package:pieno/add_car_form.dart';
 import 'package:pieno/cars.dart';
 import 'package:pieno/io/http.dart';
-import 'package:pieno/io/storage.dart';
 import 'package:pieno/login.dart';
 import 'package:pieno/models.dart';
 import 'package:pieno/services/bluetooth.dart';
@@ -155,6 +154,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late UserState state;
+  List<Car>? cars;
+
   Future<Pump> getPump(BuildContext context, int tankSize, int fuelLevel,
       FuelType fuelType) async {
     double latitude;
@@ -181,20 +182,18 @@ class _HomePageState extends State<HomePage> {
     return pump;
   }
 
-  Future<void> checkActive(BuildContext context) async {
-    if (Provider.of<UserState>(context).cars?.isEmpty == false) {
-      if (Provider.of<UserState>(context, listen: false).activeCar == null) {
-        int? index = await readIndexFromFile();
-        index ??= 0;
-        Provider.of<UserState>(context, listen: false).activeCar =
-            Provider.of<UserState>(context, listen: false).cars![index];
-      }
-    }
+  void initCars() async {
+    cars =
+        await Provider.of<UserState>(context, listen: false).getCars(context);
+    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      initCars();
+    });
   }
 
   @override
@@ -204,8 +203,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<List<PriceData>> getColumnData(FuelType fuelType) async {
-    List<(String, double)> fuelPrices = await Provider.of<Api>(context)
-        .getColumnData(state.activeCar!.fuelType);
+    List<(String, double)> fuelPrices =
+        await Provider.of<Api>(context).getColumnData(fuelType);
 
     List<PriceData> columnData = [];
     double currPrice = 0.0;
@@ -224,22 +223,11 @@ class _HomePageState extends State<HomePage> {
 
       currPrice = fuelPrices.elementAt(i).$2;
     }
-
-    // double lastPrice = columnData.last.y;
-    // double forecastedPrice = 1.798;
-    // Color? forecastColor = const Color.fromARGB(255, 0, 132, 255);
-    // if (forecastedPrice > lastPrice) {
-    //   forecastColor = Colors.red;
-    // } else if (forecastedPrice < lastPrice) {
-    //   forecastColor = Colors.green;
-    // }
-    // columnData.add(PriceData("Forecast", forecastedPrice, forecastColor));
     return columnData;
   }
 
   @override
   Widget build(BuildContext context) {
-    checkActive(context);
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 6, 17, 63),
       extendBodyBehindAppBar: true,
@@ -321,9 +309,10 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               SizedBox(height: MediaQuery.of(context).size.height * 0.15),
-              Provider.of<UserState>(context).cars?.isEmpty == false
+              cars != null
                   ? Container(
                       height: MediaQuery.of(context).size.height * 0.30,
+                      width: MediaQuery.of(context).size.width * 0.9,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           colors: [
@@ -366,7 +355,9 @@ class _HomePageState extends State<HomePage> {
                                   color: Colors.white,
                                 ),
                                 Text(
-                                  state.activeCar!.name,
+                                  state.activeCar != null
+                                      ? state.activeCar!.name
+                                      : cars![0].name,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 30,
@@ -418,7 +409,9 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                                 Text(
-                                  "${state.activeCar!.fuelLevel}%",
+                                  state.activeCar != null
+                                      ? "${state.activeCar!.fuelLevel}%"
+                                      : "${cars![0].fuelLevel}",
                                   style: const TextStyle(color: Colors.white),
                                 )
                               ],
@@ -458,9 +451,10 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
               SizedBox(height: MediaQuery.of(context).size.height * 0.07),
-              Provider.of<UserState>(context).cars?.isEmpty == false
+              cars != null
                   ? Container(
                       height: MediaQuery.of(context).size.height * 0.20,
+                      width: MediaQuery.of(context).size.width * 0.9,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           colors: [
@@ -481,10 +475,20 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                       child: FutureBuilder(
-                          future: getColumnData(state.activeCar!.fuelType),
+                          future: getColumnData(
+                            state.activeCar != null
+                                ? state.activeCar!.fuelType
+                                : cars![0].fuelType,
+                          ),
                           builder: (context, snapshot) {
                             if (!snapshot.hasData) {
-                              return const CircularProgressIndicator();
+                              return const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  CircularProgressIndicator(),
+                                ],
+                              );
                             }
                             var data = snapshot.data as List<PriceData>;
                             return SfCartesianChart(
@@ -519,7 +523,8 @@ class _HomePageState extends State<HomePage> {
                                 )
                               ],
                             );
-                          }))
+                          }),
+                    )
                   : const SizedBox(),
               SizedBox(height: MediaQuery.of(context).size.height * 0.07),
               GestureDetector(

@@ -5,31 +5,6 @@ import 'package:pieno/models.dart';
 import 'package:pieno/state.dart';
 import 'package:provider/provider.dart';
 
-void main() {
-  runApp(MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => UserState(
-            "ciao",
-            "Boss",
-            Car(
-              name: "R4",
-              plateNo: "AA000AA",
-              tankSize: 100,
-              size: "piccola",
-              ownerId: "Boss",
-              id: "R4",
-              fuelLevel: 78,
-              fuelType: FuelType.balls,
-            ),
-          ),
-        ),
-      ],
-      child: const MaterialApp(
-        home: CarsPage(),
-      )));
-}
-
 class CarsPage extends StatefulWidget {
   const CarsPage({super.key});
 
@@ -49,8 +24,9 @@ class _CarsPageState extends State<CarsPage> {
   @override
   void initState() {
     super.initState();
-
-    initCars();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      initCars();
+    });
   }
 
   void setAsActive(int index) {

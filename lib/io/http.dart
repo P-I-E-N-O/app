@@ -143,8 +143,11 @@ class Api {
       "lpg": "GPL",
       "cng": "Metano",
     };
+
+    print("GetColumnData: ${fuel[fuelType.string]}");
     final response =
         await client.get("/fuel_prediction/${fuel[fuelType.string]}");
+    print("Response of getFuelPrediction: ${response.data}");
     return (response.data as List<(String, double)>);
   }
 }

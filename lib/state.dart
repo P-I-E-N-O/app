@@ -44,9 +44,7 @@ class UserState extends ChangeNotifier {
 
   Future<List<Car>?> getCars(BuildContext context) async {
     _cars ??= await Provider.of<Api>(context, listen: false).getCars();
-
     notifyListeners();
-
     return _cars!;
   }
 }

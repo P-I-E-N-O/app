@@ -1,6 +1,8 @@
 import 'package:pieno/models.dart';
 import 'package:dio/dio.dart';
 
+import 'dart:convert' show json;
+
 class Api {
   Api({required this.client});
   final Dio client;
@@ -136,18 +138,17 @@ class Api {
     return response;
   }
 
-  Future<List<(String, double)>> getColumnData(FuelType fuelType) async {
-    Map<String, String> fuel = {
-      "Gasoline": "Benzina",
-      "Diesel": "Gasolio",
-      "LPG": "GPL",
-      "CNG": "Metano",
+  Future<Map<String, double>> getColumnDataHttp(FuelType fuelType) async {
+    Map<FuelType, String> fuel = {
+      FuelType.petrol: "Benzina",
+      FuelType.diesel: "Gasolio",
+      FuelType.lpg: "GPL",
+      FuelType.cng: "Metano",
     };
-
-    print("GetColumnData: ${fuelType.string}");
-    final response =
-        await client.get("/fuel_prediction/${fuel[fuelType.string]}");
+    final response = await client.get("/fuel_prediction/${fuel[fuelType]}");
     print("Response of getFuelPrediction: ${response.data}");
-    return (response.data as List<(String, double)>);
+    Map<String, dynamic> res = json.decode(response.data);
+
+    return res.cast<String, double>();
   }
 }

@@ -203,25 +203,36 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<List<PriceData>> getColumnData(FuelType fuelType) async {
-    List<(String, double)> fuelPrices =
-        await Provider.of<Api>(context).getColumnData(fuelType);
+    Map<String, double> fuelPrices =
+        await Provider.of<Api>(context).getColumnDataHttp(fuelType);
 
     List<PriceData> columnData = [];
     double currPrice = 0.0;
     Color? forecastColor;
-    for (int i = 0; i < fuelPrices.length; i++) {
-      if (i == 0) {
+
+    DateTime? date;
+    String? formattedDate;
+    double? roundedPrice;
+    var fuelPricesList = fuelPrices.entries;
+    for (int i = 0; i < fuelPricesList.length; i++) {
+      date = DateTime.parse(fuelPricesList.elementAt(i).key);
+      formattedDate =
+          "${date.day.toString().padLeft(2, '0')}-${date.month.toString().padLeft(2, '0')}";
+
+      roundedPrice =
+          double.parse(fuelPricesList.elementAt(i).value.toStringAsFixed(3));
+
+      if (i == 0 || roundedPrice == currPrice) {
         forecastColor = const Color.fromARGB(255, 0, 132, 255);
-      } else if (fuelPrices.elementAt(i).$2 > currPrice) {
+      } else if (roundedPrice > currPrice) {
         forecastColor = Colors.red;
-      } else if (fuelPrices.elementAt(i).$2 < currPrice) {
+      } else if (roundedPrice < currPrice) {
         forecastColor = Colors.green;
       }
 
-      columnData.add(PriceData(fuelPrices.elementAt(i).$1,
-          fuelPrices.elementAt(i).$2, forecastColor));
+      columnData.add(PriceData(formattedDate, roundedPrice, forecastColor));
 
-      currPrice = fuelPrices.elementAt(i).$2;
+      currPrice = roundedPrice;
     }
     return columnData;
   }
@@ -380,42 +391,41 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                           ),
-                          if (state.activeCar != null)
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: SizedBox(
-                                    height: 20.0,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15),
-                                      child: LiquidLinearProgressIndicator(
-                                        value:
-                                            (state.activeCar!.fuelLevel ?? 0) /
-                                                100,
-                                        valueColor:
-                                            const AlwaysStoppedAnimation(
-                                          Color.fromARGB(255, 0, 132, 255),
-                                        ),
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 7, 45, 114),
-                                        borderColor: Colors.transparent,
-                                        borderWidth: 0,
-                                        borderRadius: 12.0,
-                                        direction: Axis.horizontal,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: SizedBox(
+                                  height: 20.0,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 15),
+                                    child: LiquidLinearProgressIndicator(
+                                      value: state.activeCar == null
+                                          ? ((cars![0].fuelLevel ?? 0) / 100)
+                                          : ((state.activeCar!.fuelLevel ?? 0) /
+                                              100),
+                                      valueColor: const AlwaysStoppedAnimation(
+                                        Color.fromARGB(255, 0, 132, 255),
                                       ),
+                                      backgroundColor:
+                                          const Color.fromARGB(255, 7, 45, 114),
+                                      borderColor: Colors.transparent,
+                                      borderWidth: 0,
+                                      borderRadius: 12.0,
+                                      direction: Axis.horizontal,
                                     ),
                                   ),
                                 ),
-                                Text(
-                                  state.activeCar != null
-                                      ? "${state.activeCar!.fuelLevel}%"
-                                      : "${cars![0].fuelLevel}",
-                                  style: const TextStyle(color: Colors.white),
-                                )
-                              ],
-                            ),
+                              ),
+                              Text(
+                                state.activeCar != null
+                                    ? "${state.activeCar!.fuelLevel}%"
+                                    : "${cars![0].fuelLevel}",
+                                style: const TextStyle(color: Colors.white),
+                              )
+                            ],
+                          ),
                         ],
                       ))
                   : Padding(
@@ -481,6 +491,9 @@ class _HomePageState extends State<HomePage> {
                                 : cars![0].fuelType,
                           ),
                           builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              print(snapshot.error);
+                            }
                             if (!snapshot.hasData) {
                               return const Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -494,7 +507,7 @@ class _HomePageState extends State<HomePage> {
                             return SfCartesianChart(
                               title: ChartTitle(
                                 text:
-                                    "${state.activeCar!.fuelType.string} Price Trend",
+                                    "${(state.activeCar?.fuelType ?? cars![0].fuelType).string} Price Trend",
                                 textStyle: const TextStyle(
                                   color: Colors.white,
                                 ),

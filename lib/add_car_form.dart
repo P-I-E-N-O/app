@@ -218,7 +218,7 @@ class _AddCarFormState extends State<AddCarForm> {
                   items: const [
                     DropdownMenuItem(
                       value: FuelType.petrol,
-                      child: Text("Petrol"),
+                      child: Text("Gasoline"),
                     ),
                     DropdownMenuItem(
                       value: FuelType.diesel,

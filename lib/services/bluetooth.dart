@@ -1,29 +1,26 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
-
-import 'package:pieno/services/permissions.dart';
+import 'package:pieno/io/storage.dart';
 
 class BluetoothService {
   final FlutterReactiveBle _ble = FlutterReactiveBle();
   late QualifiedCharacteristic _rxCharacteristic;
 
   StreamSubscription<DiscoveredDevice>? _scanSubscription;
+  // ignore: unused_field
   StreamSubscription<ConnectionStateUpdate>? _connectionSubscription;
 
   void startScanAndConnect() async {
-    if (await requestPermissions()) {
-      _scanSubscription =
-          _ble.scanForDevices(withServices: []).listen((device) {
-        if (device.name == "CAM") {
-          _scanSubscription?.cancel();
-          _connectToDevice(device.id);
-        }
-      }, onError: (dynamic error) {
-        print("Scan error: $error");
-      });
-    }
+    _scanSubscription = _ble.scanForDevices(withServices: []).listen((device) {
+      if (device.name == "CAM") {
+        _scanSubscription?.cancel();
+        _connectToDevice(device.id);
+      }
+    }, onError: (dynamic error) {
+      print("Scan error: $error");
+    });
   }
 
   void _connectToDevice(String deviceId) {
@@ -65,7 +62,6 @@ class BluetoothService {
               deviceId: deviceId,
             );
             _ble.subscribeToCharacteristic(_rxCharacteristic).listen((data) {
-              print("Data received: $data");
               _onDataReceived(data);
             }, onError: (dynamic error) {
               print("Subscription error: $error");
@@ -79,20 +75,31 @@ class BluetoothService {
   }
 
   void _onDataReceived(List<int> data) {
-    print('Data received: $data');
-    //String receivedData = String.fromCharCodes(data);
-    //_sendToDatabase(receivedData);
+    print("Data received: $data");
+    String receivedData = String.fromCharCodes(data);
+    _sendToDatabase(receivedData);
   }
 
   void _sendToDatabase(String data) async {
+    String? carToken = await readCarTokenFromFile();
+    if (carToken == null) {
+      return;
+    }
+
     final response = await http.post(
-      Uri.parse('https://your-database-endpoint.com/data'),
+      Uri.parse('https://backend.pieno.dev/meter/'),
       headers: <String, String>{
+        'Authorization': 'Bearer $carToken',
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
         'data': data,
       }),
     );
+    if (response.statusCode == 200) {
+      print('Data sent successfully');
+    } else {
+      print('Failed to send data');
+    }
   }
 }

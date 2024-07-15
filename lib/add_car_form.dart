@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:pieno/io/http.dart';
+import 'package:pieno/io/storage.dart';
 import 'package:pieno/models.dart';
 import 'package:pieno/state.dart';
 import 'package:pieno/widgets/snackbars.dart';
@@ -16,19 +17,18 @@ class AddCarForm extends StatefulWidget {
 class _AddCarFormState extends State<AddCarForm> {
   String? dropDownCarSizeValue;
   FuelType? dropDownFuelTypeValue;
+  late var state = context.read<UserState>();
 
   Map<String, TextEditingController> data = {
     "name": TextEditingController(),
     "plateNo": TextEditingController(),
     "tankSize": TextEditingController(),
-    "size": TextEditingController(),
   };
 
   Future<void> addCar() async {
     if (data["name"]!.text.isEmpty ||
         data["plateNo"]!.text.isEmpty ||
         data["tankSize"]!.text.isEmpty ||
-        data["size"]!.text.isEmpty ||
         dropDownFuelTypeValue == null ||
         dropDownCarSizeValue == null) {
       ScaffoldMessenger.of(context).showSnackBar(allFieldsRequired);
@@ -38,7 +38,7 @@ class _AddCarFormState extends State<AddCarForm> {
     String name = data["name"]!.text;
     String plateNo = data["plateNo"]!.text;
     int tankSize = int.parse(data["tankSize"]!.text);
-    String size = data["size"]!.text;
+    String size = dropDownCarSizeValue!;
     FuelType fuelType = dropDownFuelTypeValue!;
     Car car = Car(
       name: name,
@@ -47,14 +47,21 @@ class _AddCarFormState extends State<AddCarForm> {
       size: size,
       fuelType: fuelType,
       fuelLevel: 0,
-      ownerId: Provider.of<UserState>(context, listen: false).username!,
+      ownerId: state.username!,
       id: '',
     );
 
     try {
       final response =
           await Provider.of<Api>(context, listen: false).addCar(car);
-      car.id = response.data["car_id"];
+      car.id = response.carId;
+      car.token = response.carToken;
+      state.getCars(context);
+      if (state.activeCar == null) {
+        print("oooo");
+        state.activeCar = car;
+        writeIndexToFile("0");
+      }
       Navigator.pop(context);
     } on DioException catch (e) {
       e.response?.statusCode == 409

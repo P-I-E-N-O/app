@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pieno/main.dart';
 import 'package:pieno/models.dart';
+import 'package:pieno/state.dart';
 import 'package:pieno/widgets/snackbars.dart';
 import 'package:provider/provider.dart';
 import 'package:pieno/io/http.dart';
@@ -60,21 +61,28 @@ class _RegisterPageState extends State<RegisterPage> {
           email: email,
           password: password,
         ));
-        if (response.data["success"] as bool) {
-          Provider.of<Api>(context, listen: false).setToken(
-            response.data["token"],
-          );
+        if (response.statusCode == 200) {
+          Provider.of<Api>(context, listen: false)
+              .setToken(response.data["token"]);
+          Provider.of<UserState>(context, listen: false).token =
+              response.data["token"];
+
           await const FlutterSecureStorage().write(
             key: "token",
             value: response.data["token"],
           );
-          Provider.of<Api>(context, listen: false).getLoggedInUser();
+          User? user =
+              await Provider.of<Api>(context, listen: false).getLoggedInUser();
+
+          Provider.of<UserState>(context, listen: false).username = user!.name;
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => const HomePage(),
             ),
           );
+        } else if (response.statusCode == 409) {
+          ScaffoldMessenger.of(context).showSnackBar(userAlreadyExist);
         }
       } on DioException catch (e) {
         if (e.response?.statusCode == 400) {

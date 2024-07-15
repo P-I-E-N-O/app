@@ -29,7 +29,6 @@ class Api {
         name: response.data["user"]["name"],
         surname: response.data["user"]["surname"],
         email: response.data["user"]["email"],
-        password: response.data["user"]["password"],
       );
       return user;
     } on DioException catch (_) {
@@ -61,7 +60,6 @@ class Api {
 
     List<Car> cars =
         (carsData as List<dynamic>).map<Car>((e) => Car.fromJson(e)).toList();
-
     return cars;
   }
 
@@ -81,11 +79,11 @@ class Api {
         .toList();
   }
 
-  Future<dynamic> addCar(Car car) async {
+  Future<PutCarResponse> addCar(Car car) async {
     final Map<String, String> size = {
-      "Piccola": "small",
-      "Media": "medium",
-      "Grande": "large"
+      "small": "small",
+      "medium": "medium",
+      "large": "large"
     };
 
     final response = await client.put("/cars/", data: {
@@ -93,9 +91,10 @@ class Api {
       "size": size[car.size],
       "plate_no": car.plateNo,
       "tank_size": car.tankSize,
+      "fuel_type": car.fuelType.name.toLowerCase(),
     });
 
-    return response;
+    return PutCarResponse.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future addUser(User user) async {
@@ -135,5 +134,17 @@ class Api {
     });
 
     return response;
+  }
+
+  Future<List<(String, double)>> getColumnData(FuelType fuelType) async {
+    Map<String, String> fuel = {
+      "gasoline": "Benzina",
+      "diesel": "Gasolio",
+      "lpg": "GPL",
+      "cng": "Metano",
+    };
+    final response =
+        await client.get("/fuel_prediction/${fuel[fuelType.string]}");
+    return (response.data as List<(String, double)>);
   }
 }

@@ -27,7 +27,9 @@ extension FuelTypeString on FuelType {
 @JsonSerializable(fieldRename: FieldRename.snake)
 class Car {
   String id = "";
-  int fuelLevel;
+  String? token;
+  int? fuelLevel;
+  @JsonKey(defaultValue: FuelType.petrol)
   FuelType fuelType;
   String? imageUrl;
   final String name;
@@ -40,7 +42,8 @@ class Car {
     required this.name,
     required this.plateNo,
     required this.size,
-    required this.fuelLevel,
+    this.fuelLevel,
+    this.token,
     required this.fuelType,
     required this.tankSize,
     required this.ownerId,
@@ -56,13 +59,13 @@ class User {
   final String name;
   final String surname;
   final String email;
-  final String password;
+  final String? password;
 
   User({
     required this.name,
     required this.surname,
     required this.email,
-    required this.password,
+    this.password,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
@@ -127,4 +130,16 @@ class Price {
     DateFormat ggMm = DateFormat("dd/MM");
     return ggMm.format(dateFormat.parse(data));
   }
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class PutCarResponse {
+  PutCarResponse({required this.carId, required this.carToken});
+
+  String carId;
+  String carToken;
+
+  factory PutCarResponse.fromJson(Map<String, dynamic> json) =>
+      _$PutCarResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$PutCarResponseToJson(this);
 }

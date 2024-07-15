@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pieno/main.dart';
+import 'package:pieno/models.dart';
 import 'package:pieno/register.dart';
 import 'package:pieno/io/http.dart';
+import 'package:pieno/state.dart';
 import 'package:pieno/widgets/snackbars.dart';
 import 'package:provider/provider.dart';
 
@@ -46,8 +48,10 @@ class _LoginPageState extends State<LoginPage> {
         value: token,
       );
       Provider.of<Api>(context, listen: false).setToken(token);
-      Provider.of<Api>(context, listen: false).getLoggedInUser();
-
+      User? user =
+          await Provider.of<Api>(context, listen: false).getLoggedInUser();
+      Provider.of<UserState>(context, listen: false).token = token;
+      Provider.of<UserState>(context, listen: false).username = user!.name;
       Navigator.push(
         context,
         MaterialPageRoute(

@@ -33,6 +33,17 @@ SnackBar invalidEmailOrPassword = const SnackBar(
   ),
 );
 
+SnackBar userAlreadyExist = const SnackBar(
+  backgroundColor: Colors.black,
+  content: Text(
+    "User already exists",
+    textAlign: TextAlign.center,
+    style: TextStyle(
+      color: Colors.white,
+    ),
+  ),
+);
+
 SnackBar carAlreadyExists = const SnackBar(
   backgroundColor: Colors.black,
   content: Text(

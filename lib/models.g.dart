@@ -10,8 +10,10 @@ Car _$CarFromJson(Map<String, dynamic> json) => Car(
       name: json['name'] as String,
       plateNo: json['plate_no'] as String,
       size: json['size'] as String,
-      fuelLevel: (json['fuel_level'] as num).toInt(),
-      fuelType: $enumDecode(_$FuelTypeEnumMap, json['fuel_type']),
+      fuelLevel: (json['fuel_level'] as num?)?.toInt(),
+      token: json['token'] as String?,
+      fuelType: $enumDecodeNullable(_$FuelTypeEnumMap, json['fuel_type']) ??
+          FuelType.petrol,
       tankSize: (json['tank_size'] as num).toInt(),
       ownerId: json['owner_id'] as String,
       id: json['id'] as String,
@@ -19,6 +21,7 @@ Car _$CarFromJson(Map<String, dynamic> json) => Car(
 
 Map<String, dynamic> _$CarToJson(Car instance) => <String, dynamic>{
       'id': instance.id,
+      'token': instance.token,
       'fuel_level': instance.fuelLevel,
       'fuel_type': _$FuelTypeEnumMap[instance.fuelType]!,
       'image_url': instance.imageUrl,
@@ -42,7 +45,7 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
       name: json['name'] as String,
       surname: json['surname'] as String,
       email: json['email'] as String,
-      password: json['password'] as String,
+      password: json['password'] as String?,
     );
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
@@ -56,10 +59,7 @@ Pump _$PumpFromJson(Map<String, dynamic> json) => Pump(
       indirizzo: json['indirizzo'] as String,
       latitudine: (json['latitudine'] as num).toDouble(),
       longitudine: (json['longitudine'] as num).toDouble(),
-      fuelPrices: (json['fuel_prices'] as Map<String, dynamic>).map(
-        (k, e) => MapEntry(
-            $enumDecode(_$FuelTypeEnumMap, k), (e as num?)?.toDouble()),
-      ),
+      fuelPrices: Pump.fuelFromJson(json['fuel_prices']),
       id: (json['id'] as num).toInt(),
     );
 
@@ -91,4 +91,16 @@ Price _$PriceFromJson(Map<String, dynamic> json) => Price(
 Map<String, dynamic> _$PriceToJson(Price instance) => <String, dynamic>{
       'data': instance.data,
       'prezzo': instance.prezzo,
+    };
+
+PutCarResponse _$PutCarResponseFromJson(Map<String, dynamic> json) =>
+    PutCarResponse(
+      carId: json['car_id'] as String,
+      carToken: json['car_token'] as String,
+    );
+
+Map<String, dynamic> _$PutCarResponseToJson(PutCarResponse instance) =>
+    <String, dynamic>{
+      'car_id': instance.carId,
+      'car_token': instance.carToken,
     };

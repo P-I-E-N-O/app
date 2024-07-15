@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pieno/add_car_form.dart';
+import 'package:pieno/io/storage.dart';
 import 'package:pieno/models.dart';
 import 'package:pieno/state.dart';
 import 'package:provider/provider.dart';
@@ -40,8 +41,8 @@ class _CarsPageState extends State<CarsPage> {
   List<Car>? cars;
 
   void initCars() async {
-    var state = context.watch<UserState>();
-    cars = await state.getCars(context);
+    cars =
+        await Provider.of<UserState>(context, listen: false).getCars(context);
     setState(() {});
   }
 
@@ -70,6 +71,7 @@ class _CarsPageState extends State<CarsPage> {
               onPressed: () {
                 Provider.of<UserState>(context, listen: false).activeCar =
                     cars![index];
+                writeIndexToFile(index.toString());
                 Navigator.pop(context);
               },
               child: const Text(

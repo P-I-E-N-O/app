@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pieno/add_car_form.dart';
 import 'package:pieno/io/storage.dart';
+import 'package:pieno/main.dart';
 import 'package:pieno/models.dart';
 import 'package:pieno/state.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +19,6 @@ class _CarsPageState extends State<CarsPage> {
   void initCars() async {
     cars =
         await Provider.of<UserState>(context, listen: false).getCars(context);
-    setState(() {});
   }
 
   @override
@@ -48,7 +48,8 @@ class _CarsPageState extends State<CarsPage> {
                 Provider.of<UserState>(context, listen: false).activeCar =
                     cars![index];
                 writeIndexToFile(index.toString());
-                Navigator.pop(context);
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (_) => const HomePage()));
               },
               child: const Text(
                 "OK",

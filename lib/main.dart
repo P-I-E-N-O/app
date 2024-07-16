@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:location/location.dart';
 import 'package:lottie/lottie.dart';
@@ -12,9 +13,11 @@ import 'package:pieno/models.dart';
 import 'package:pieno/services/bluetooth.dart';
 import 'package:pieno/services/permissions.dart';
 import 'package:pieno/state.dart';
+import 'package:pieno/widgets/snackbars.dart';
 import 'package:provider/provider.dart';
 import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -156,14 +159,15 @@ class _HomePageState extends State<HomePage> {
   late UserState state;
   List<Car>? cars;
 
-  Future<Pump> getPump(BuildContext context, int tankSize, int fuelLevel,
-      FuelType fuelType) async {
+  void getPump(BuildContext context, int tankSize, int fuelLevel,
+      FuelType fuelType, String size) async {
     double latitude;
     double longitude;
     Map<String, double> consPerKm = {
       "small": 0.05,
       "medium": 0.1,
       "big": 0.15,
+      "large": 0.15,
     };
     Location location = Location();
     LocationData locationData = await location.getLocation();
@@ -171,15 +175,80 @@ class _HomePageState extends State<HomePage> {
     longitude = locationData.longitude!;
 
     // ignore: use_build_context_synchronously
-    Pump pump = await Provider.of<Api>(context, listen: false).getBestPump(
+    Future<Pump> pumpFuture =
+        Provider.of<Api>(context, listen: false).getBestPump(
       latitude,
       longitude,
       tankSize,
       fuelLevel,
-      consPerKm[fuelType.name]!,
+      consPerKm[size.toLowerCase()]!,
     );
 
-    return pump;
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(50.0),
+          ),
+        ),
+        backgroundColor: const Color.fromARGB(255, 6, 17, 63),
+        title: const Center(
+          child: Text(
+            "Best pump for you!",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ),
+        content: FutureBuilder<Pump>(
+          future: pumpFuture,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return SizedBox(
+                width: MediaQuery.of(context).size.width * 0.9,
+                height: MediaQuery.of(context).size.height * 0.3,
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                  ],
+                ),
+              );
+            } else {
+              var pump = snapshot.data as Pump;
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    "Address ${pump.indirizzo}",
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    "Prezzo al litro: ${pump.fuelPrices[fuelType]}",
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      String googleMapsUrl =
+                          "https://www.google.com/maps/search/?api=1&query=${pump.latitudine},${pump.longitudine}";
+                      if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
+                        await launchUrl(Uri.parse(googleMapsUrl));
+                      } else {
+                        throw 'Could not launch $googleMapsUrl';
+                      }
+                    },
+                    child: const Text("Navigate to Google Maps"),
+                  ),
+                ],
+              );
+            }
+          },
+        ),
+      ),
+    );
   }
 
   void initCars() async {
@@ -421,7 +490,7 @@ class _HomePageState extends State<HomePage> {
                               Text(
                                 state.activeCar != null
                                     ? "${state.activeCar!.fuelLevel}%"
-                                    : "${cars![0].fuelLevel}",
+                                    : "${cars![0].fuelLevel}%",
                                 style: const TextStyle(color: Colors.white),
                               )
                             ],
@@ -542,8 +611,22 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: MediaQuery.of(context).size.height * 0.07),
               GestureDetector(
                 onTap: () {
-                  //getPump(context, state.activeCar!.tankSize,
-                  //state.activeCar!.fuelLevel, state.activeCar!.fuelType);
+                  cars != null
+                      ? state.activeCar != null
+                          ? getPump(
+                              context,
+                              state.activeCar!.tankSize,
+                              state.activeCar!.fuelLevel ?? 0,
+                              state.activeCar!.fuelType,
+                              state.activeCar!.size)
+                          : getPump(
+                              context,
+                              cars![0].tankSize,
+                              cars![0].fuelLevel ?? 0,
+                              cars![0].fuelType,
+                              cars![0].size)
+                      : ScaffoldMessenger.of(context)
+                          .showSnackBar(noActiveCars);
                 },
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.11,

@@ -65,3 +65,14 @@ SnackBar networkError = const SnackBar(
     ),
   ),
 );
+
+SnackBar noActiveCars = const SnackBar(
+  backgroundColor: Colors.black,
+  content: Text(
+    "Add a Car!",
+    textAlign: TextAlign.center,
+    style: TextStyle(
+      color: Colors.white,
+    ),
+  ),
+);

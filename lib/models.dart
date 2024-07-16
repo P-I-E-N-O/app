@@ -2,12 +2,12 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:intl/intl.dart';
 part 'models.g.dart';
 
-enum FuelType { petrol, diesel, lpg, cng, electric, balls }
+enum FuelType { gasoline, diesel, lpg, cng, electric, balls }
 
 extension FuelTypeString on FuelType {
   String get string => switch (this) {
         FuelType.balls => "Little Balls",
-        FuelType.petrol => "Gasoline",
+        FuelType.gasoline => "Gasoline",
         FuelType.diesel => "Diesel",
         FuelType.cng => "CNG",
         FuelType.lpg => "LPG",
@@ -16,7 +16,7 @@ extension FuelTypeString on FuelType {
 
   String get backendName => switch (this) {
         FuelType.balls => "Little Balls",
-        FuelType.petrol => "Gasoline",
+        FuelType.gasoline => "Gasoline",
         FuelType.diesel => "Diesel",
         FuelType.cng => "CNG",
         FuelType.lpg => "LPG",
@@ -29,7 +29,7 @@ class Car {
   String id = "";
   String? token;
   int? fuelLevel;
-  @JsonKey(defaultValue: FuelType.petrol)
+  @JsonKey(defaultValue: FuelType.gasoline)
   FuelType fuelType;
   String? imageUrl;
   final String name;
@@ -84,6 +84,11 @@ class Pump {
   static Map<FuelType, double?> fuelFromJson(json) {
     return {
       FuelType.balls: json["little_balls"],
+      FuelType.gasoline: json["gasoline"],
+      FuelType.diesel: json["diesel"],
+      FuelType.cng: json["cng"],
+      FuelType.lpg: json["lpg"],
+      FuelType.electric: json["electric"],
     };
   }
 

@@ -13,7 +13,7 @@ Car _$CarFromJson(Map<String, dynamic> json) => Car(
       fuelLevel: (json['fuel_level'] as num?)?.toInt(),
       token: json['token'] as String?,
       fuelType: $enumDecodeNullable(_$FuelTypeEnumMap, json['fuel_type']) ??
-          FuelType.petrol,
+          FuelType.gasoline,
       tankSize: (json['tank_size'] as num).toInt(),
       ownerId: json['owner_id'] as String,
       id: json['id'] as String,
@@ -33,7 +33,7 @@ Map<String, dynamic> _$CarToJson(Car instance) => <String, dynamic>{
     };
 
 const _$FuelTypeEnumMap = {
-  FuelType.petrol: 'petrol',
+  FuelType.gasoline: 'petrol',
   FuelType.diesel: 'diesel',
   FuelType.lpg: 'lpg',
   FuelType.cng: 'cng',

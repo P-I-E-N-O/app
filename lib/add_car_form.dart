@@ -61,6 +61,7 @@ class _AddCarFormState extends State<AddCarForm> {
         state.activeCar = car;
         writeIndexToFile("0");
       }
+      context.read<UserState>().updateCars(context);
       Navigator.pop(context);
     } on DioException catch (e) {
       e.response?.statusCode == 409
@@ -184,8 +185,8 @@ class _AddCarFormState extends State<AddCarForm> {
                       child: Text("Medium"),
                     ),
                     DropdownMenuItem(
-                      value: "large",
-                      child: Text("Large"),
+                      value: "big",
+                      child: Text("Big"),
                     ),
                   ],
                   onChanged: (String? value) {
@@ -217,7 +218,7 @@ class _AddCarFormState extends State<AddCarForm> {
                   value: dropDownFuelTypeValue,
                   items: const [
                     DropdownMenuItem(
-                      value: FuelType.petrol,
+                      value: FuelType.gasoline,
                       child: Text("Gasoline"),
                     ),
                     DropdownMenuItem(

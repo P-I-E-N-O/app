@@ -140,13 +140,12 @@ class Api {
 
   Future<Map<String, double>> getColumnDataHttp(FuelType fuelType) async {
     Map<FuelType, String> fuel = {
-      FuelType.petrol: "Benzina",
+      FuelType.gasoline: "Benzina",
       FuelType.diesel: "Gasolio",
       FuelType.lpg: "GPL",
       FuelType.cng: "Metano",
     };
     final response = await client.get("/fuel_prediction/${fuel[fuelType]}");
-    print("Response of getFuelPrediction: ${response.data}");
     Map<String, dynamic> res = json.decode(response.data);
 
     return res.cast<String, double>();

@@ -8,13 +8,14 @@ This repository contains the code that is part of the paper [P.I.E.N.O. - Petrol
 
 ~~~
 @ARTICLE{savarese2024pieno,
-  author={Savarese, Marco and Blasi, Antonio De and Zaccagnino, Carmine and Grazia, Carlo Augusto},
+  author={Savarese, Marco and De Blasi, Antonio and Zaccagnino, Carmine and Grazia, Carlo Augusto},
   journal={IEEE Access}, 
-  title={P.I.E.N.O. - Petrol-filling Itinerary Estimation aNd Optimization}, 
+  title={P. I. E. N. O.–Petrol-Filling Itinerary Estimation aNd Optimization}, 
   year={2024},
-  volume={},
+  volume={12},
   number={},
-  pages={1-1},
-  keywords={Fuels;Optimization;Estimation;Bridges;Routing;Standards;Routing protocols;Real-time systems;Mobile applications;Market research;Artificial Intelligence;Cloud computing;Edge Computing;Intelligent transportation systems;Microcontrollers;Mobile Communication;Mobile Applications;Smart Mobility;Smart transportation;Time series analysis;Vehicle-to-everything},
-  doi={10.1109/ACCESS.2024.3483959}}
+  pages={158094-158102},
+  keywords={Fuels;Optimization;Estimation;Bridges;Routing;Standards;Routing protocols;Real-time systems;Mobile applications;Market research;Artificial Intelligence;cloud computing;edge computing;intelligent transportation systems;microcontrollers;mobile communication;mobile applications;smart mobility;smart transportation;time series analysis;vehicle-to-everything},
+  doi={10.1109/ACCESS.2024.3483959}
+}
 ~~~

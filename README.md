@@ -10,7 +10,7 @@ This repository contains the code that is part of the paper [P.I.E.N.O. - Petrol
 @ARTICLE{savarese2024pieno,
   author={Savarese, Marco and De Blasi, Antonio and Zaccagnino, Carmine and Grazia, Carlo Augusto},
   journal={IEEE Access}, 
-  title={P. I. E. N. O.–Petrol-Filling Itinerary Estimation aNd Optimization}, 
+  title={{P. I. E. N. O.}–{P}etrol-Filling {I}tinerary {E}stimation a{N}d {O}ptimization}, 
   year={2024},
   volume={12},
   number={},
